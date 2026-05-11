@@ -1,0 +1,384 @@
+import React, { useState } from 'react';
+import { Book, Map, History, Shield, Scale, ChevronRight, HelpCircle, RefreshCw, Home } from 'lucide-react';
+
+const DokdoDictionary = () => {
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedTerm, setSelectedTerm] = useState(null);
+  const [quizMode, setQuizMode] = useState(false);
+  const [currentQuiz, setCurrentQuiz] = useState(0);
+  const [score, setScore] = useState(0);
+  const [quizFinished, setQuizFinished] = useState(false);
+
+  const data = [
+    {
+      id: 1,
+      category: 'geography',
+      categoryName: '지리와 자원',
+      icon: <Map className="w-5 h-5" />,
+      title: '동도와 서도',
+      content: '독도를 이루는 가장 큰 두 개의 섬입니다. 독도는 이 두 섬과 함께 89개의 작은 바위섬들로 이루어져 있습니다.',
+      color: 'bg-blue-100 text-blue-700'
+    },
+    {
+      id: 2,
+      category: 'geography',
+      categoryName: '지리와 자원',
+      icon: <Map className="w-5 h-5" />,
+      title: '가스 하이드레이트',
+      content: "'불타는 얼음'이라고도 불리는 고체 에너지 자원입니다. 독도 주변에 약 6억 톤(우리 국민이 30년간 쓸 수 있는 양)이 묻혀 있는 보물입니다.",
+      color: 'bg-blue-100 text-blue-700'
+    },
+    {
+      id: 3,
+      category: 'geography',
+      categoryName: '지리와 자원',
+      icon: <Map className="w-5 h-5" />,
+      title: '황금어장',
+      content: '차가운 바닷물(한류)과 따뜻한 바닷물(난류)이 만나는 곳으로, 물고기가 아주 많이 살아서 낚시하기에 최고의 장소입니다.',
+      color: 'bg-blue-100 text-blue-700'
+    },
+    {
+      id: 4,
+      category: 'geography',
+      categoryName: '지리와 자원',
+      icon: <Map className="w-5 h-5" />,
+      title: '오키섬',
+      content: '일본에서 독도와 가장 가까운 섬이지만, 거리가 157.5km나 되어 맑은 날에도 독도가 보이지 않습니다.',
+      color: 'bg-blue-100 text-blue-700'
+    },
+    {
+      id: 5,
+      category: 'history',
+      categoryName: '역사 속 기록',
+      icon: <History className="w-5 h-5" />,
+      title: '세종실록지리지',
+      content: '조선 전기에 만들어진 지리지로, "우산(독도)과 무릉(울릉도) 두 섬은 거리가 멀지 않아 날씨가 맑으면 바라볼 수 있다"고 기록되어 있습니다.',
+      color: 'bg-amber-100 text-amber-700'
+    },
+    {
+      id: 6,
+      category: 'history',
+      categoryName: '역사 속 기록',
+      icon: <History className="w-5 h-5" />,
+      title: '대한제국 칙령 제41호',
+      content: '고종 황제가 독도를 울릉군의 관할 구역으로 공식 선포하여, 독도가 우리 땅임을 국내외에 확실히 알린 문서입니다.',
+      color: 'bg-amber-100 text-amber-700'
+    },
+    {
+      id: 7,
+      category: 'history',
+      categoryName: '역사 속 기록',
+      icon: <History className="w-5 h-5" />,
+      title: '태정관 지령',
+      content: '당시 일본 최고 국가기관인 태정관이 "울릉도와 독도는 일본과 관계가 없음을 명심하라"고 공식적으로 인정한 아주 중요한 문서입니다.',
+      color: 'bg-amber-100 text-amber-700'
+    },
+    {
+      id: 8,
+      category: 'history',
+      categoryName: '역사 속 기록',
+      icon: <History className="w-5 h-5" />,
+      title: '은주시청합기',
+      content: '일본 관리가 기록한 보고서로, 일본의 북서쪽 경계는 오키섬이며 독도와 울릉도는 조선 땅임을 분명히 하고 있습니다.',
+      color: 'bg-amber-100 text-amber-700'
+    },
+    {
+      id: 9,
+      category: 'guardians',
+      categoryName: '독도를 지킨 사람들',
+      icon: <Shield className="w-5 h-5" />,
+      title: '안용복',
+      content: '조선 숙종 때 일본으로 건너가 울릉도와 독도가 조선의 영토임을 일본 정부(막부)로부터 확답받고 돌아온 용감한 어부입니다.',
+      color: 'bg-green-100 text-green-700'
+    },
+    {
+      id: 10,
+      category: 'guardians',
+      categoryName: '독도를 지킨 사람들',
+      icon: <Shield className="w-5 h-5" />,
+      title: '독도의용수비대',
+      content: '6.25 전쟁 직후 혼란한 틈을 타 일본이 독도에 들어오려 하자, 홍순칠을 비롯한 민간인들이 스스로 조직하여 독도를 지킨 단체입니다.',
+      color: 'bg-green-100 text-green-700'
+    },
+    {
+      id: 11,
+      category: 'guardians',
+      categoryName: '독도를 지킨 사람들',
+      icon: <Shield className="w-5 h-5" />,
+      title: '최종덕',
+      content: '1968년부터 독도에 살기 시작하여 1981년 주민등록을 옮긴 독도 최초의 주민 할아버지입니다.',
+      color: 'bg-green-100 text-green-700'
+    },
+    {
+      id: 12,
+      category: 'guardians',
+      categoryName: '독도를 지킨 사람들',
+      icon: <Shield className="w-5 h-5" />,
+      title: '독도경비대',
+      content: '현재 독도에 머물며 24시간 우리 땅 독도를 든든하게 지키고 있는 경찰관 형들입니다.',
+      color: 'bg-green-100 text-green-700'
+    },
+    {
+      id: 13,
+      category: 'legal',
+      categoryName: '법과 갈등',
+      icon: <Scale className="w-5 h-5" />,
+      title: '영해',
+      content: '나라의 주권이 미치는 바다의 범위로, 해안선에서 12해리(약 22km)까지를 말합니다.',
+      color: 'bg-purple-100 text-purple-700'
+    },
+    {
+      id: 14,
+      category: 'legal',
+      categoryName: '법과 갈등',
+      icon: <Scale className="w-5 h-5" />,
+      title: '배타적 경제수역 (EEZ)',
+      content: '바다 자원을 탐사하고 개발할 수 있는 권리가 있는 구역으로, 해안선에서 200해리(약 370km)까지의 범위를 말합니다.',
+      color: 'bg-purple-100 text-purple-700'
+    },
+    {
+      id: 15,
+      category: 'legal',
+      categoryName: '법과 갈등',
+      icon: <Scale className="w-5 h-5" />,
+      title: '평화선 (이승만 라인)',
+      content: '1952년 우리 바다의 자원을 보호하고 독도 영유권을 확실히 하기 위해 선포한 해상 경계선입니다.',
+      color: 'bg-purple-100 text-purple-700'
+    },
+    {
+      id: 16,
+      category: 'legal',
+      categoryName: '법과 갈등',
+      icon: <Scale className="w-5 h-5" />,
+      title: '실효적 지배',
+      content: '우리가 실제로 독도에 살면서 등대를 세우고, 군대를 보내 지키는 등 국가로서의 권리를 직접 행사하고 있다는 뜻입니다.',
+      color: 'bg-purple-100 text-purple-700'
+    }
+  ];
+
+  const quizData = [
+    {
+      question: "'불타는 얼음'이라고 불리며 독도 주변에 많이 묻혀 있는 에너지 자원은?",
+      options: ['석탄', '석유', '가스 하이드레이트', '천연가스'],
+      answer: 2
+    },
+    {
+      question: "독도를 울릉군의 관할 구역으로 공식 선포한 고종 황제의 문서는?",
+      options: ['세종실록지리지', '대한제국 칙령 제41호', '삼국사기', '팔도총도'],
+      answer: 1
+    },
+    {
+      question: "일본 최고 국가기관이 '독도는 일본과 관계없음'을 인정한 문서는?",
+      options: ['태정관 지령', '오키문서', '신창전시', '은주시청합기'],
+      answer: 0
+    },
+    {
+      question: "독도에 살기 시작해 주민등록까지 옮긴 최초의 주민 할아버지는?",
+      options: ['안용복', '홍순칠', '최종덕', '이승만'],
+      answer: 2
+    }
+  ];
+
+  const filteredData = activeCategory === 'all' 
+    ? data 
+    : data.filter(item => item.category === activeCategory);
+
+  const handleAnswer = (index) => {
+    if (index === quizData[currentQuiz].answer) {
+      setScore(score + 1);
+    }
+    if (currentQuiz < quizData.length - 1) {
+      setCurrentQuiz(currentQuiz + 1);
+    } else {
+      setQuizFinished(true);
+    }
+  };
+
+  const resetQuiz = () => {
+    setQuizMode(false);
+    setCurrentQuiz(0);
+    setScore(0);
+    setQuizFinished(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
+      <div className="max-w-4xl mx-auto">
+        {/* Top Navigation Bar */}
+        <div className="flex justify-start mb-6">
+          <a 
+            href="../index.html" 
+            className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 transition-all font-medium group"
+          >
+            <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span>홈으로</span>
+          </a>
+        </div>
+
+        {/* Header */}
+        <header className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-2 flex items-center justify-center gap-2">
+            <Book className="w-8 h-8" /> 독도 탐험 용어 사전
+          </h1>
+          <p className="text-slate-600">독도의 지리, 역사, 영웅들을 인터렉티브하게 탐험해 보세요!</p>
+        </header>
+
+        {!quizMode ? (
+          <>
+            {/* Navigation Tabs */}
+            <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <button 
+                onClick={() => setActiveCategory('all')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+              >
+                전체보기
+              </button>
+              <button 
+                onClick={() => setActiveCategory('geography')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'geography' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+              >
+                지리와 자원
+              </button>
+              <button 
+                onClick={() => setActiveCategory('history')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'history' ? 'bg-amber-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+              >
+                역사 기록
+              </button>
+              <button 
+                onClick={() => setActiveCategory('guardians')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'guardians' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+              >
+                독도의 영웅
+              </button>
+              <button 
+                onClick={() => setActiveCategory('legal')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === 'legal' ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+              >
+                법과 갈등
+              </button>
+              <button 
+                onClick={() => setQuizMode(true)}
+                className="px-4 py-2 rounded-full text-sm font-bold bg-rose-500 text-white shadow-md hover:bg-rose-600 flex items-center gap-1"
+              >
+                <HelpCircle className="w-4 h-4" /> 퀴즈 풀기
+              </button>
+            </div>
+
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredData.map((item) => (
+                <div 
+                  key={item.id}
+                  onClick={() => setSelectedTerm(item)}
+                  className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group flex items-start gap-4"
+                >
+                  <div className={`p-3 rounded-xl ${item.color} flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                    {item.icon}
+                  </div>
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-xs font-semibold uppercase tracking-wider opacity-60">{item.categoryName}</span>
+                      <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-800">{item.title}</h3>
+                    <p className="text-slate-500 text-sm line-clamp-2 mt-1">{item.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Quiz Interface */
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 animate-in fade-in zoom-in duration-300">
+            {!quizFinished ? (
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <span className="text-sm font-bold text-rose-500">독도 퀴즈 도전!</span>
+                  <span className="text-sm text-slate-400 font-medium">문제 {currentQuiz + 1} / {quizData.length}</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-8 leading-relaxed">
+                  {quizData[currentQuiz].question}
+                </h2>
+                <div className="space-y-3">
+                  {quizData[currentQuiz].options.map((option, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleAnswer(idx)}
+                      className="w-full text-left p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 hover:bg-blue-50 transition-all font-medium text-slate-700 flex justify-between items-center group"
+                    >
+                      {option}
+                      <span className="w-6 h-6 rounded-full bg-slate-100 group-hover:bg-blue-500 group-hover:text-white flex items-center justify-center text-xs">
+                        {idx + 1}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-10">
+                <div className="text-6xl mb-6">🎉</div>
+                <h2 className="text-3xl font-bold text-slate-800 mb-2">대단해요!</h2>
+                <p className="text-slate-600 mb-6">당신은 이제 훌륭한 독도 수호자입니다.</p>
+                <div className="bg-slate-50 p-6 rounded-2xl mb-8">
+                  <span className="text-slate-400 block mb-1">최종 점수</span>
+                  <span className="text-5xl font-black text-blue-600">{score * 25}점</span>
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <button 
+                    onClick={resetQuiz}
+                    className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-blue-700 flex items-center gap-2"
+                  >
+                    <RefreshCw className="w-5 h-5" /> 다시 공부하기
+                  </button>
+                  <a 
+                    href="../index.html"
+                    className="bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-slate-900 flex items-center gap-2"
+                  >
+                    <Home className="w-5 h-5" /> 홈으로 이동
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Modal for Details */}
+        {selectedTerm && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedTerm(null)}>
+            <div 
+              className="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-300"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className={`p-8 ${selectedTerm.color.split(' ')[0]} flex justify-center`}>
+                <div className="p-6 bg-white rounded-full shadow-inner scale-125">
+                  {React.cloneElement(selectedTerm.icon, { className: "w-10 h-10" })}
+                </div>
+              </div>
+              <div className="p-8">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{selectedTerm.categoryName}</span>
+                <h2 className="text-2xl font-black text-slate-800 mt-1 mb-4">{selectedTerm.title}</h2>
+                <div className="h-1 w-12 bg-blue-500 mb-6 rounded-full"></div>
+                <p className="text-slate-600 leading-relaxed text-lg">
+                  {selectedTerm.content}
+                </p>
+                <button 
+                  onClick={() => setSelectedTerm(null)}
+                  className="mt-8 w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-colors"
+                >
+                  확인했어요
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="mt-12 text-center text-slate-400 text-xs">
+        <p>© 독도 탐험 사전 - 우리 땅 독도를 사랑합시다.</p>
+      </footer>
+    </div>
+  );
+};
+
+export default DokdoDictionary;
