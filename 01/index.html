@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>독도 역사 타임라인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .timeline-line { position: absolute; left: 50%; transform: translateX(-50%); width: 2px; height: 100%; background: #e2e8f0; z-index: 0; }
+        @media (max-width: 768px) {
+            .timeline-line { left: 20px; }
+            .timeline-item { width: 100% !important; padding-left: 50px !important; padding-right: 0 !important; text-align: left !important; }
+            .timeline-dot { left: 20px !important; transform: translateX(-50%) !important; }
+        }
+        .filter-btn.active { background-color: #2563eb; color: white; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- 상단 네비게이션 바 -->
+        <nav class="flex justify-start mb-6">
+            <a href="../index.html" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-slate-700 hover:bg-gray-50 hover:text-blue-600 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                홈
+            </a>
+        </nav>
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-slate-800 mb-4">우리 땅 독도, 역사의 기록</h1>
+            <p class="text-slate-600">삼국시대부터 현대까지 기록된 독도의 역사와 명칭의 변화를 확인해보세요.</p>
+        </header>
+
+        <!-- 필터 영역 -->
+        <div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-container">
+            <button class="filter-btn active px-4 py-2 rounded-full border border-blue-600 text-blue-600 text-sm font-medium transition-all" data-filter="all">전체보기</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:border-blue-600 transition-all" data-filter="명칭">명칭/서양명칭</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:border-blue-600 transition-all" data-filter="사료">한국/일본 사료 및 지도</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:border-blue-600 transition-all" data-filter="주요 내용">주요 조약 및 선포</button>
+            <button class="filter-btn px-4 py-2 rounded-full border border-gray-300 text-gray-600 text-sm font-medium hover:border-blue-600 transition-all" data-filter="한일 갈등">주요 사건 및 갈등</button>
+        </div>
+
+        <!-- 타임라인 컨테이너 -->
+        <div class="relative" id="timeline">
+            <div class="timeline-line"></div>
+            <div id="timeline-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const historyData = [
+            { period: "삼국시대", type: "명칭", title: "우산도(于山島)", desc: "삼국시대 우산국에서 유래한 명칭으로 조선에서 사용됨.", detail: "독도의 가장 오래된 뿌리 중 하나로, 울릉도와 함께 우산국의 영토였음을 나타냅니다." },
+            { period: "조선시대", type: "명칭", title: "가지도(可支島)", desc: "가지어(강치)가 많이 사는 섬이라는 뜻에서 유래한 명칭.", detail: "과거 독도에 풍부했던 강치(바다사자)의 서식지였음을 증명하는 생태적 명칭입니다." },
+            { period: "조선시대", type: "명칭", title: "석도(石島)", desc: "돌로 이루어진 돌섬을 한자로 표기한 명칭.", detail: "'돌섬'의 전라도 방언인 '독섬'을 한자로 옮긴 것으로, 오늘날 '독도'라는 이름의 직접적인 유래가 되었습니다." },
+            { period: "조선시대", type: "명칭", title: "송도(松島)", desc: "일본에서 독도를 가리키던 명칭.", detail: "일본은 과거에 울릉도를 '죽도(타케시마)', 독도를 '송도(마츠시마)'로 불렀습니다." },
+            { period: "1454년", type: "사료", title: "세종실록지리지", desc: "우산과 무릉 두 섬이 날씨가 맑으면 서로 보인다고 기록됨.", detail: "울릉도에서 독도가 육안으로 보인다는 사실을 기록하여 독도가 우리 영토임을 명확히 했습니다." },
+            { period: "1531년", type: "사료", title: "신증동국여지승람", desc: "우산도와 울릉도가 울진현 조에 기술됨.", detail: "관찬 지리지로서 두 섬의 위치와 소속을 분명히 밝히고 있습니다." },
+            { period: "1667년", type: "사료", title: "은주시청합기", desc: "일본 관리가 오키섬을 일본의 서쪽 경계로 기록함.", detail: "일본 스스로 오키섬 너머의 울릉도와 독도는 일본 땅이 아님을 인정한 사료입니다." },
+            { period: "1693년", type: "한일 갈등", title: "1차 안용복 사건", desc: "안용복이 일본에 납치되었으나 독도가 조선 땅임을 주장함.", detail: "민간 외교가로서 일본의 영토 침범에 강력히 항의한 사건입니다." },
+            { period: "1696년", type: "한일 갈등", title: "2차 안용복 사건", desc: "일본으로 건너가 울릉도와 독도가 조선 땅임을 재차 주장함.", detail: "이후 일본 막부는 울릉도 도해 금지령을 내리게 됩니다." },
+            { period: "1779년", type: "사료", title: "개정 일본여지로정전도", desc: "울릉도와 독도를 일본 영역 밖으로 무채색 처리함.", detail: "일본의 저명한 지리학자 나가쿠보 세키스이가 제작한 지도로, 일본 영토와 구분하고 있습니다." },
+            { period: "1785년", type: "사료", title: "삼국접양지도", desc: "울릉도와 독도를 조선과 같은 황색으로 칠하고 '조선의 것'이라 명기함.", detail: "하야시 시헤이가 제작한 이 지도는 당시 국제적인 영토 인식의 기준이 되었습니다." },
+            { period: "1787년/1789년", type: "명칭", title: "다즐레 / 아르고노트", desc: "프랑스와 영국이 울릉도에 붙인 서양식 명칭.", detail: "서양 함대들이 동해를 탐사하며 붙인 이름이나 실제 지형과 명칭 사이의 혼선이 있었습니다." },
+            { period: "1808년", type: "사료", title: "만기요람", desc: "우산은 왜인들이 말하는 송도(독도)라고 기록됨.", detail: "우산도와 일본인들이 부르는 송도가 동일한 독도임을 명시하고 있습니다." },
+            { period: "1832년", type: "사료", title: "삼국통람도", desc: "독일인 클라프로트가 독도를 한반도와 같은 노란색으로 표시함.", detail: "서양인들도 독도가 조선의 영토라는 인식을 공유하고 있었음을 보여줍니다." },
+            { period: "1849년", type: "명칭", title: "리앙쿠르(Liancourt Rock)", desc: "프랑스 포경선 리앙쿠르호가 명명함.", detail: "오늘날까지 국제적으로 독도를 지칭할 때 종종 사용되는 명칭입니다." },
+            { period: "1854년", type: "명칭", title: "올리부차 / 메넬라이", desc: "러시아 수송선이 동도와 서도를 각각 명명함.", detail: "독도의 두 주요 섬을 구분하여 인식하기 시작한 서양의 기록입니다." },
+            { period: "1877년", type: "사료", title: "태정관 지령", desc: "일본 최고기관이 독도는 일본과 관계없음을 공식 확인.", detail: "메이지 정부가 스스로 독도가 조선 영토임을 인정한 가장 중요한 공문서 중 하나입니다." },
+            { period: "1900년 10월 25일", type: "주요 내용", title: "대한제국 칙령 제41호", desc: "독도(석도)를 울도군 관할 구역에 명시하여 공식 선포함.", detail: "근대적 행정 명령을 통해 독도 영유권을 대내외에 공표한 역사적인 날입니다." },
+            { period: "1905년 2월 22일", type: "한일 갈등", title: "시마네현 고시 제40호", desc: "일본 시마네현이 독도를 '다케시마'로 일방적 편입 고시.", detail: "러일전쟁 중 전략적 목적을 위해 무주지 선점 논리를 내세운 불법적 조치입니다." },
+            { period: "1946년 1월 29일", type: "주요 내용", title: "SCAPIN 제677호", desc: "연합군 지령으로 독도를 일본 통치 범위에서 제외함.", detail: "제2차 세계대전 종료 후 독도가 한국의 영토임을 국제적으로 재확인한 조치입니다." },
+            { period: "1952년 1월 18일", type: "주요 내용", title: "평화선 (이승만 라인) 선포", desc: "인접 해양 주권 선언으로 독도를 포함한 해역 주권 명시.", detail: "어족 자원 보호와 영토 수호를 위해 선포된 해양 경계선입니다." },
+            { period: "1998년", type: "한일 갈등", title: "신한일 어업협정 체결", desc: "독도가 중간수역에 포함되면서 영유권 논란 발생.", detail: "경제적 실리와 영토 주권 사이에서 큰 사회적 논쟁이 되었습니다." },
+            { period: "2001년 이후", type: "한일 갈등", title: "일본 교과서의 독도 기술 급증", desc: "일본 교과서에서 독도를 일본 고유 영토로 왜곡 기술.", detail: "미래 세대에게 잘못된 영토 인식을 심어주어 한일 간 갈등의 불씨가 되고 있습니다." },
+            { period: "2005년 3월 16일", type: "한일 갈등", title: "다케시마의 날 제정", desc: "시마네현 의회가 2월 22일을 기념일로 지정.", detail: "지방자치단체의 조례 제정을 통해 영유권 주장을 공고화하려는 시도로 한일 관계를 악화시켰습니다." }
+        ];
+
+        function renderTimeline(filter = "all") {
+            const container = document.getElementById('timeline-content');
+            container.innerHTML = '';
+
+            const filteredData = filter === "all" 
+                ? historyData 
+                : historyData.filter(item => {
+                    if (filter === "명칭") return item.type.includes("명칭");
+                    if (filter === "사료") return item.type.includes("사료");
+                    if (filter === "주요 내용") return item.type.includes("주요 내용");
+                    if (filter === "한일 갈등") return item.type.includes("한일 갈등");
+                    return item.type === filter;
+                });
+
+            filteredData.forEach((item, index) => {
+                const isLeft = index % 2 === 0;
+                const itemHtml = `
+                    <div class="timeline-item relative mb-12 w-1/2 ${isLeft ? 'pr-12 text-right' : 'ml-auto pl-12 text-left'} transition-all duration-500 hover:scale-105">
+                        <div class="timeline-dot absolute top-0 w-4 h-4 bg-blue-600 rounded-full z-10 ${isLeft ? '-right-2' : '-left-2'}"></div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:border-blue-300 transition-colors cursor-pointer group">
+                            <span class="inline-block px-3 py-1 mb-2 text-xs font-bold uppercase rounded-full ${getTypeColor(item.type)}">${item.type}</span>
+                            <div class="text-sm font-bold text-blue-600 mb-1">${item.period}</div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-2">${item.title}</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4">${item.desc}</p>
+                            <div class="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-500">
+                                <div class="pt-4 border-t border-gray-100 text-sm text-slate-500 italic">
+                                    ${item.detail}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHtml;
+            });
+        }
+
+        function getTypeColor(type) {
+            if (type.includes("명칭")) return "bg-emerald-100 text-emerald-700";
+            if (type.includes("사료")) return "bg-purple-100 text-purple-700";
+            if (type.includes("주요 내용")) return "bg-blue-100 text-blue-700";
+            if (type.includes("한일 갈등")) return "bg-rose-100 text-rose-700";
+            return "bg-gray-100 text-gray-700";
+        }
+
+        // 필터 이벤트 바인딩
+        document.getElementById('filter-container').addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                    btn.classList.add('border-gray-300', 'text-gray-600');
+                });
+                e.target.classList.add('active', 'bg-blue-600', 'text-white');
+                e.target.classList.remove('border-gray-300', 'text-gray-600');
+                renderTimeline(e.target.getAttribute('data-filter'));
+            }
+        });
+
+        // 초기 렌더링
+        window.onload = () => renderTimeline();
+    </script>
+</body>
+</html>
