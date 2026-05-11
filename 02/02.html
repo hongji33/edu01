@@ -3,128 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>독도 탐험 인터렉티브 사전</title>
+    <title>독도 탐험 용어 사전</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
-        body { font-family: 'Pretendard', sans-serif; }
-        .modal-active { overflow: hidden; }
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            min-height: 100vh;
         }
-        .fade-in { animation: fadeIn 0.3s ease-out; }
+
+        .category-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .term-item {
+            transition: all 0.2s ease;
+        }
+
+        .term-item:hover {
+            background-color: #f0f9ff;
+        }
+
+        .wave-container {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C57.05,115.85,131.59,123.44,195,113.86c54.08-8.19,110.23-23.41,126.39-57.42Z" fill="%230ea5e9" fill-opacity="0.2"/></svg>');
+            background-size: 50% 100%;
+            animation: wave-move 10s linear infinite;
+        }
+
+        @keyframes wave-move {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .home-btn {
+            transition: all 0.2s ease;
+        }
+        .home-btn:hover {
+            background-color: #f0f9ff;
+            color: #0284c7;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen p-4 md:p-8">
-    <div class="max-w-4xl mx-auto">
-        <!-- Top Navigation Bar -->
-        <div class="flex justify-start mb-6">
-            <a href="../index.html" class="flex items-center gap-2 px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 transition-all font-medium group">
-                <i class="fa-solid fa-house group-hover:scale-110 transition-transform"></i>
-                <span>홈으로</span>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Navigation Bar -->
+        <nav class="flex justify-start mb-8">
+            <a href="../index.html" class="home-btn flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm text-sky-700 font-medium border border-sky-100 hover:shadow-md transition-all">
+                <i class="fa-solid fa-house"></i>
+                <span>홈</span>
             </a>
-        </div>
+        </nav>
 
         <!-- Header -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-book"></i> 독도 탐험 용어 사전
-            </h1>
-            <p class="text-slate-600">독도의 지리, 역사, 영웅들을 인터렉티브하게 탐험해 보세요!</p>
+        <header class="text-center mb-12">
+            <div class="inline-block bg-white p-4 rounded-full mb-4 shadow-sm">
+                <i class="fa-solid fa-anchor text-sky-600 text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-sky-900 mb-2">독도 탐험 용어 사전</h1>
+            <p class="text-sky-700">우리 땅 독도를 더 깊이 알아가는 탐험 가이드</p>
         </header>
 
-        <!-- Main Content Area -->
-        <div id="main-content">
-            <!-- Navigation Tabs -->
-            <div class="flex flex-wrap justify-center gap-2 mb-8" id="category-tabs">
-                <button data-cat="all" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all bg-blue-600 text-white shadow-md">전체보기</button>
-                <button data-cat="geography" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100">지리와 자원</button>
-                <button data-cat="history" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100">역사 기록</button>
-                <button data-cat="guardians" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100">독도의 영웅</button>
-                <button data-cat="legal" class="cat-btn px-4 py-2 rounded-full text-sm font-medium transition-all bg-white text-slate-600 hover:bg-slate-100">법과 갈등</button>
-                <button id="start-quiz-btn" class="px-4 py-2 rounded-full text-sm font-bold bg-rose-500 text-white shadow-md hover:bg-rose-600 flex items-center gap-1">
-                    <i class="fa-solid fa-circle-question"></i> 퀴즈 풀기
-                </button>
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="categoryGrid">
+            <!-- 1. 지리와 자원 -->
+            <div class="category-card bg-white rounded-3xl p-6 shadow-md border border-sky-100" onclick="showCategory('geo')">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-map-location-dot text-green-600 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">1. 지리와 자원</h2>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">동도와 서도, 그리고 숨겨진 보물들</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">동도와 서도</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">가스 하이드레이트</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">황금어장</span>
+                </div>
             </div>
 
-            <!-- Grid Layout -->
-            <div id="terms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Items will be injected here -->
+            <!-- 2. 역사 속의 기록 -->
+            <div class="category-card bg-white rounded-3xl p-6 shadow-md border border-sky-100" onclick="showCategory('history')">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-scroll text-amber-600 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">2. 역사 속의 기록</h2>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">독도가 우리 땅임을 증명하는 옛 기록들</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">세종실록지리지</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">칙령 제41호</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">태정관 지령</span>
+                </div>
+            </div>
+
+            <!-- 3. 독도를 지킨 사람들 -->
+            <div class="category-card bg-white rounded-3xl p-6 shadow-md border border-sky-100" onclick="showCategory('people')">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-users-shield text-blue-600 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">3. 독도를 지킨 사람들</h2>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">용기와 헌신으로 독도를 수호한 인물들</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">안용복</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">독도의용수비대</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">최종덕</span>
+                </div>
+            </div>
+
+            <!-- 4. 법과 갈등 -->
+            <div class="category-card bg-white rounded-3xl p-6 shadow-md border border-sky-100" onclick="showCategory('law')">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mr-4">
+                        <i class="fa-solid fa-scale-balanced text-purple-600 text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">4. 법과 갈등</h2>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">영토를 지키기 위한 법과 권리의 이해</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">영해</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">EEZ</span>
+                    <span class="px-3 py-1 bg-gray-50 text-xs rounded-full border border-gray-200">실효적 지배</span>
+                </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-12 text-center text-slate-400 text-xs">
-            <p>© 독도 탐험 사전 - 우리 땅 독도를 사랑합시다.</p>
-        </footer>
+        <div class="wave-container mt-12 opacity-50">
+            <div class="wave"></div>
+        </div>
     </div>
 
-    <!-- Modal Backdrop -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div id="modal-content" class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl fade-in">
-            <!-- Modal Body injected by JS -->
+    <!-- Modal for details -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col modal-enter shadow-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <div class="flex items-center">
+                    <div id="modalIcon" class="w-10 h-10 rounded-xl flex items-center justify-center mr-4"></div>
+                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-800"></h2>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="p-6 overflow-y-auto space-y-6">
+                <!-- Content will be injected here -->
+            </div>
         </div>
     </div>
 
     <script>
-        const data = [
-            { id: 1, category: 'geography', categoryName: '지리와 자원', icon: 'fa-map', title: '동도와 서도', content: '독도를 이루는 가장 큰 두 개의 섬입니다. 독도는 이 두 섬과 함께 89개의 작은 바위섬들로 이루어져 있습니다.', color: 'bg-blue-100 text-blue-700' },
-            { id: 2, category: 'geography', categoryName: '지리와 자원', icon: 'fa-map', title: '가스 하이드레이트', content: "'불타는 얼음'이라고도 불리는 고체 에너지 자원입니다. 독도 주변에 약 6억 톤(우리 국민이 30년간 쓸 수 있는 양)이 묻혀 있는 보물입니다.", color: 'bg-blue-100 text-blue-700' },
-            { id: 3, category: 'geography', categoryName: '지리와 자원', icon: 'fa-map', title: '황금어장', content: '차가운 바닷물(한류)과 따뜻한 바닷물(난류)이 만나는 곳으로, 물고기가 아주 많이 살아서 낚시하기에 최고의 장소입니다.', color: 'bg-blue-100 text-blue-700' },
-            { id: 4, category: 'geography', categoryName: '지리와 자원', icon: 'fa-map', title: '오키섬', content: '일본에서 독도와 가장 가까운 섬이지만, 거리가 157.5km나 되어 맑은 날에도 독도가 보이지 않습니다.', color: 'bg-blue-100 text-blue-700' },
-            { id: 5, category: 'history', categoryName: '역사 속 기록', icon: 'fa-clock-rotate-left', title: '세종실록지리지', content: '조선 전기에 만들어진 지리지로, "우산(독도)과 무릉(울릉도) 두 섬은 거리가 멀지 않아 날씨가 맑으면 바라볼 수 있다"고 기록되어 있습니다.', color: 'bg-amber-100 text-amber-700' },
-            { id: 6, category: 'history', categoryName: '역사 속 기록', icon: 'fa-clock-rotate-left', title: '대한제국 칙령 제41호', content: '고종 황제가 독도를 울릉군의 관할 구역으로 공식 선포하여, 독도가 우리 땅임을 국내외에 확실히 알린 문서입니다.', color: 'bg-amber-100 text-amber-700' },
-            { id: 7, category: 'history', categoryName: '역사 속 기록', icon: 'fa-clock-rotate-left', title: '태정관 지령', content: '당시 일본 최고 국가기관인 태정관이 "울릉도와 독도는 일본과 관계가 없음을 명심하라"고 공식적으로 인정한 아주 중요한 문서입니다.', color: 'bg-amber-100 text-amber-700' },
-            { id: 8, category: 'history', categoryName: '역사 속 기록', icon: 'fa-clock-rotate-left', title: '은주시청합기', content: '일본 관리가 기록한 보고서로, 일본의 북서쪽 경계는 오키섬이며 독도와 울릉도는 조선 땅임을 분명히 하고 있습니다.', color: 'bg-amber-100 text-amber-700' },
-            { id: 9, category: 'guardians', categoryName: '독도를 지킨 사람들', icon: 'fa-shield-halved', title: '안용복', content: '조선 숙종 때 일본으로 건너가 울릉도와 독도가 조선의 영토임을 일본 정부(막부)로부터 확답받고 돌아온 용감한 어부입니다.', color: 'bg-green-100 text-green-700' },
-            { id: 10, category: 'guardians', categoryName: '독도를 지킨 사람들', icon: 'fa-shield-halved', title: '독도의용수비대', content: '6.25 전쟁 직후 혼란한 틈을 타 일본이 독도에 들어오려 하자, 홍순칠을 비롯한 민간인들이 스스로 조직하여 독도를 지킨 단체입니다.', color: 'bg-green-100 text-green-700' },
-            { id: 11, category: 'guardians', categoryName: '독도를 지킨 사람들', icon: 'fa-shield-halved', title: '최종덕', content: '1968년부터 독도에 살기 시작하여 1981년 주민등록을 옮긴 독도 최초의 주민 할아버지입니다.', color: 'bg-green-100 text-green-700' },
-            { id: 12, category: 'guardians', categoryName: '독도를 지킨 사람들', icon: 'fa-shield-halved', title: '독도경비대', content: '현재 독도에 머물며 24시간 우리 땅 독도를 든든하게 지키고 있는 경찰관 형들입니다.', color: 'bg-green-100 text-green-700' },
-            { id: 13, category: 'legal', categoryName: '법과 갈등', icon: 'fa-scale-balanced', title: '영해', content: '나라의 주권이 미치는 바다의 범위로, 해안선에서 12해리(약 22km)까지를 말합니다.', color: 'bg-purple-100 text-purple-700' },
-            { id: 14, category: 'legal', categoryName: '법과 갈등', icon: 'fa-scale-balanced', title: '배타적 경제수역 (EEZ)', content: '바다 자원을 탐사하고 개발할 수 있는 권리가 있는 구역으로, 해안선에서 200해리(약 370km)까지의 범위를 말합니다.', color: 'bg-purple-100 text-purple-700' },
-            { id: 15, category: 'legal', categoryName: '법과 갈등', icon: 'fa-scale-balanced', title: '평화선 (이승만 라인)', content: '1952년 우리 바다의 자원을 보호하고 독도 영유권을 확실히 하기 위해 선포한 해상 경계선입니다.', color: 'bg-purple-100 text-purple-700' },
-            { id: 16, category: 'legal', categoryName: '법과 갈등', icon: 'fa-scale-balanced', title: '실효적 지배', content: '우리가 실제로 독도에 살면서 등대를 세우고, 군대를 보내 지키는 등 국가로서의 권리를 직접 행사하고 있다는 뜻입니다.', color: 'bg-purple-100 text-purple-700' }
-        ];
+        const data = {
+            geo: {
+                title: "지리와 자원",
+                icon: "fa-map-location-dot",
+                color: "bg-green-100",
+                textColor: "text-green-600",
+                items: [
+                    { name: "동도와 서도", desc: "독도를 이루는 가장 큰 두 개의 섬입니다. 독도는 이 두 섬과 함께 89개의 작은 바위섬들로 이루어져 있습니다." },
+                    { name: "가스 하이드레이트 (Gas Hydrate)", desc: "'불타는 얼음'이라고도 불리는 고체 에너지 자원입니다. 독도 주변에 약 6억 톤(우리 국민이 30년간 쓸 수 있는 양)이 묻혀 있는 보물입니다." },
+                    { name: "황금어장", desc: "차가운 바닷물(한류)과 따뜻한 바닷물(난류)이 만나는 곳으로, 물고기가 아주 많이 살아서 낚시하기에 최고의 장소입니다." },
+                    { name: "오키섬", desc: "일본에서 독도와 가장 가까운 섬이지만, 거리가 157.5km나 되어 맑은 날에도 독도가 보이지 않습니다." }
+                ]
+            },
+            history: {
+                title: "역사 속의 기록",
+                icon: "fa-scroll",
+                color: "bg-amber-100",
+                textColor: "text-amber-600",
+                items: [
+                    { name: "세종실록지리지 (1454년)", desc: "조선 전기에 만들어진 지리지로, \"우산(독도)과 무릉(울릉도) 두 섬은 거리가 멀지 않아 날씨가 맑으면 바라볼 수 있다\"고 기록되어 있습니다." },
+                    { name: "대한제국 칙령 제41호 (1900년)", desc: "고종 황제가 독도를 울릉군의 관할 구역으로 공식 선포하여, 독도가 우리 땅임을 국내외에 확실히 알린 문서입니다." },
+                    { name: "태정관 지령 (1877년)", desc: "당시 일본 최고 국가기관인 태정관이 \"울릉도와 독도는 일본과 관계가 없음을 명심하라\"고 공식적으로 인정한 아주 중요한 문서입니다." },
+                    { name: "은주시청합기 (1667년)", desc: "일본 관리가 기록한 보고서로, 일본의 북서쪽 경계는 오키섬이며 독도와 울릉도는 조선 땅임을 분명히 하고 있습니다." }
+                ]
+            },
+            people: {
+                title: "독도를 지킨 사람들",
+                icon: "fa-users-shield",
+                color: "bg-blue-100",
+                textColor: "text-blue-600",
+                items: [
+                    { name: "안용복", desc: "조선 숙종 때 일본으로 건너가 울릉도와 독도가 조선의 영토임을 일본 정부(막부)로부터 확답받고 돌아온 용감한 어부입니다." },
+                    { name: "독도의용수비대", desc: "6.25 전쟁 직후 혼란한 틈을 타 일본이 독도에 들어오려 하자, 홍순칠을 비롯한 민간인들이 스스로 조직하여 독도를 지킨 단체입니다." },
+                    { name: "최종덕", desc: "1968년부터 독도에 살기 시작하여 1981년 주민등록을 옮긴 독도 최초의 주민 할아버지입니다." },
+                    { name: "독도경비대", desc: "현재 독도에 머물며 24시간 우리 땅 독도를 든든하게 지키고 있는 경찰관 형들입니다." }
+                ]
+            },
+            law: {
+                title: "법과 갈등",
+                icon: "fa-scale-balanced",
+                color: "bg-purple-100",
+                textColor: "text-purple-600",
+                items: [
+                    { name: "영해", desc: "나라의 주권이 미치는 바다의 범위로, 해안선에서 12해리(약 22km)까지를 말합니다." },
+                    { name: "배타적 경제수역 (EEZ)", desc: "바다 자원을 탐사하고 개발할 수 있는 권리가 있는 구역으로, 해안선에서 200해리(약 370km)까지의 범위를 말합니다." },
+                    { name: "평화선 (이승만 라인)", desc: "1952년 우리 바다의 자원을 보호하고 독도 영유권을 확실히 하기 위해 선포한 해상 경계선입니다." },
+                    { name: "실효적 지배", desc: "우리가 실제로 독도에 살면서 등대를 세우고, 군대를 보내 지키는 등 국가로서의 권리를 직접 행사하고 있다는 뜻입니다." }
+                ]
+            }
+        };
 
-        const quizData = [
-            { question: "'불타는 얼음'이라고 불리며 독도 주변에 많이 묻혀 있는 에너지 자원은?", options: ['석탄', '석유', '가스 하이드레이트', '천연가스'], answer: 2 },
-            { question: "독도를 울릉군의 관할 구역으로 공식 선포한 고종 황제의 문서는?", options: ['세종실록지리지', '대한제국 칙령 제41호', '삼국사기', '팔도총도'], answer: 1 },
-            { question: "일본 최고 국가기관이 '독도는 일본과 관계없음'을 인정한 문서는?", options: ['태정관 지령', '오키문서', '신창전시', '은주시청합기'], answer: 0 },
-            { question: "독도에 살기 시작해 주민등록까지 옮긴 최초의 주민 할아버지는?", options: ['안용복', '홍순칠', '최종덕', '이승만'], answer: 2 }
-        ];
+        function showCategory(catKey) {
+            const category = data[catKey];
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalContent = document.getElementById('modalContent');
 
-        let currentCategory = 'all';
-        let currentQuizIndex = 0;
-        let quizScore = 0;
-
-        const grid = document.getElementById('terms-grid');
-        const modalBackdrop = document.getElementById('modal-backdrop');
-        const modalContent = document.getElementById('modal-content');
-        const mainContent = document.getElementById('main-content');
-
-        // Render functions
-        function renderGrid() {
-            const filtered = currentCategory === 'all' ? data : data.filter(item => item.category === currentCategory);
-            grid.innerHTML = filtered.map(item => `
-                <div onclick="openModal(${item.id})" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-pointer group flex items-start gap-4 fade-in">
-                    <div class="p-3 rounded-xl ${item.color} flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid ${item.icon} text-xl"></i>
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider opacity-60">${item.categoryName}</span>
-                            <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-slate-600"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-800">${item.title}</h3>
-                        <p class="text-slate-500 text-sm line-clamp-2 mt-1">${item.content}</p>
-                    </div>
+            modalTitle.innerText = category.title;
+            modalIcon.className = `w-10 h-10 rounded-xl flex items-center justify-center mr-4 ${category.color}`;
+            modalIcon.innerHTML = `<i class="fa-solid ${category.icon} ${category.textColor} text-xl"></i>`;
+            
+            modalContent.innerHTML = category.items.map(item => `
+                <div class="term-item p-4 rounded-2xl border border-gray-50">
+                    <h3 class="font-bold text-gray-800 text-lg mb-2 flex items-center">
+                        <span class="w-1.5 h-6 ${category.color.replace('100', '500')} rounded-full mr-3"></span>
+                        ${item.name}
+                    </h3>
+                    <p class="text-gray-600 leading-relaxed pl-4">${item.desc}</p>
                 </div>
-            `).join
+            `).join('');
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close on backdrop click
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
